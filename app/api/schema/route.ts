@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 
+interface SchemaData {
+    database: string;
+    schema_json: Record<string, any>;
+    collection_descriptions: Record<string, string>;
+    field_descriptions: Record<string, Record<string, string>>;
+    domain_notes: string;
+    timezone: string;
+    now_iso: string;
+}
+
 export async function POST(request: NextRequest) {
     try {
         const { connectionString, database } = await request.json();
@@ -25,7 +35,7 @@ export async function POST(request: NextRequest) {
         const collections = await db.listCollections().toArray();
 
         // Get sample documents to infer schema
-        const schemaData = {
+        const schemaData: SchemaData = {
             database,
             schema_json: {},
             collection_descriptions: {},

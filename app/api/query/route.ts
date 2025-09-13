@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateMongoQuery } from '@/lib/openai';
 import { runMongoAggregation, runMongoFind } from '@/lib/mongodb';
 
-function generateFallbackChartSuggestions(data: any[]) {
+interface ChartSuggestion {
+    type: string;
+    title: string;
+    x?: string;
+    y?: string;
+}
+
+function generateFallbackChartSuggestions(data: any[]): ChartSuggestion[] {
     if (!data || data.length === 0) {
         return [{ type: 'table', title: 'No data available' }];
     }
 
-    const suggestions = [{ type: 'table', title: 'Tabular Results' }];
+    const suggestions: ChartSuggestion[] = [{ type: 'table', title: 'Tabular Results' }];
     const sampleDoc = data[0];
     const keys = Object.keys(sampleDoc);
 
@@ -89,8 +96,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Add fallback chart suggestions if none provided
-        const chartSuggestions = assistantResponse.chart_suggestions && assistantResponse.chart_suggestions.length > 0 
-            ? assistantResponse.chart_suggestions 
+        const chartSuggestions = assistantResponse.chart_suggestions && assistantResponse.chart_suggestions.length > 0
+            ? assistantResponse.chart_suggestions
             : generateFallbackChartSuggestions(queryResult.data);
 
         return NextResponse.json({
