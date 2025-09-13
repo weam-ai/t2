@@ -47,6 +47,9 @@ export function ChartViewer({ data, chartSuggestions }: ChartViewerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Debug logging
+  console.log('ChartViewer props:', { data, chartSuggestions });
+
   if (!data || data.length === 0) {
     return (
       <div className="card-glass p-12 text-center">

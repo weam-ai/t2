@@ -5,8 +5,13 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Talk-to-Mongo Assistant',
-  description: 'Convert natural language queries to MongoDB aggregation pipelines',
+  title: 'AskDB',
+  description: 'AskDB - Convert natural language queries to MongoDB aggregation pipelines with AI-powered intelligence',
+  openGraph: {
+    title: 'AskDB',
+    description: 'AskDB - Convert natural language queries to MongoDB aggregation pipelines with AI-powered intelligence',
+    url: '/askdb',
+  },
 }
 
 export default function RootLayout({

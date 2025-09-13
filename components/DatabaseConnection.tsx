@@ -6,11 +6,15 @@ import { Database, Key, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-rea
 interface DatabaseConnectionProps {
   onConnectionSuccess: (connectionString: string, databaseName: string) => void;
   onSchemaLoad: (schema: any) => void;
+  onDisconnect: () => void;
+  isConnected: boolean;
+  connectionString: string;
+  databaseName: string;
 }
 
-export function DatabaseConnection({ onConnectionSuccess, onSchemaLoad }: DatabaseConnectionProps) {
-  const [connectionString, setConnectionString] = useState('');
-  const [databaseName, setDatabaseName] = useState('');
+export function DatabaseConnection({ onConnectionSuccess, onSchemaLoad, onDisconnect, isConnected, connectionString: propConnectionString, databaseName: propDatabaseName }: DatabaseConnectionProps) {
+  const [connectionString, setConnectionString] = useState(propConnectionString);
+  const [databaseName, setDatabaseName] = useState(propDatabaseName);
   const [showPassword, setShowPassword] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -140,7 +144,7 @@ export function DatabaseConnection({ onConnectionSuccess, onSchemaLoad }: Databa
               value={connectionString}
               onChange={(e) => setConnectionString(e.target.value)}
               placeholder="mongodb://localhost:27017 or mongodb+srv://user:pass@cluster.mongodb.net"
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
             />
             <button
               type="button"
@@ -165,15 +169,28 @@ export function DatabaseConnection({ onConnectionSuccess, onSchemaLoad }: Databa
             value={databaseName}
             onChange={(e) => setDatabaseName(e.target.value)}
             placeholder="my_database"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
           />
         </div>
 
         {/* Connection Status */}
-        {connectionStatus === 'success' && (
-          <div className="flex items-center p-4 bg-green-50 border border-green-200 rounded-lg">
-            <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-            <span className="text-green-700">Successfully connected to database!</span>
+        {isConnected && (
+          <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center">
+              <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+              <div>
+                <span className="text-green-700 font-medium">Successfully connected to database!</span>
+                <p className="text-sm text-green-600 mt-1">
+                  Database: {propDatabaseName} | Connection: {propConnectionString.substring(0, 30)}...
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onDisconnect}
+              className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
+            >
+              Disconnect
+            </button>
           </div>
         )}
 
@@ -186,30 +203,39 @@ export function DatabaseConnection({ onConnectionSuccess, onSchemaLoad }: Databa
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          <button
-            onClick={handleConnect}
-            disabled={isConnecting || !connectionString.trim() || !databaseName.trim()}
-            className="flex-1 flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isConnecting ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Connecting...
-              </>
-            ) : (
-              <>
-                <Key className="h-4 w-4 mr-2" />
-                Connect to Database
-              </>
-            )}
-          </button>
+          {!isConnected ? (
+            <>
+              <button
+                onClick={handleConnect}
+                disabled={isConnecting || !connectionString.trim() || !databaseName.trim()}
+                className="flex-1 flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isConnecting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <Key className="h-4 w-4 mr-2" />
+                    Connect to Database
+                  </>
+                )}
+              </button>
 
-          <button
-            onClick={handleLoadSampleSchema}
-            className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-          >
-            Use Sample Schema
-          </button>
+              <button
+                onClick={handleLoadSampleSchema}
+                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Use Sample Schema
+              </button>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center px-6 py-3 bg-green-100 text-green-700 rounded-lg">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Connected Successfully
+            </div>
+          )}
         </div>
 
         {/* Help Text */}

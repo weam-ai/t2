@@ -118,7 +118,7 @@ body {
 
 @layer components {
     .btn {
-        @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95;
+        @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
     }
     
     .btn-primary {
@@ -146,16 +146,16 @@ body {
     }
     
     .card-hover {
-        @apply card hover:shadow-large hover:scale-[1.02] transition-all duration-300;
+        @apply card hover:shadow-large transition-all duration-300;
     }
     
     .card-glass {
         @apply bg-white/10 backdrop-blur-xl rounded-2xl shadow-large border border-white/20 overflow-hidden;
     }
     
-    .input {
-        @apply w-full px-4 py-3 text-sm border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-300 bg-white/80 backdrop-blur-sm hover:bg-white/90;
-    }
+  .input {
+    @apply w-full px-4 py-3 text-sm border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-300 bg-white/90 backdrop-blur-sm hover:bg-white text-gray-900 placeholder-gray-500;
+  }
     
     .input-error {
         @apply input border-error-300/50 focus:ring-error-500/50 focus:border-error-500/50;
@@ -194,7 +194,7 @@ body {
     }
     
     .floating-card {
-        @apply bg-white/90 backdrop-blur-xl rounded-2xl shadow-large border border-white/30 hover:shadow-xl hover:scale-[1.02] transition-all duration-300;
+        @apply bg-white/90 backdrop-blur-xl rounded-2xl shadow-large border border-white/30 hover:shadow-xl transition-all duration-300;
     }
 }
 

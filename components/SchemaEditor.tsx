@@ -384,7 +384,7 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
                                 className="input disabled:bg-gray-200 text-gray-600"
                               />
                             </div>
-                            <div className="flex-2">
+                            <div className="flex-1">
                               <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
                               <input
                                 type="text"

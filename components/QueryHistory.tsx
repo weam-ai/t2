@@ -26,9 +26,10 @@ interface QueryHistoryItem {
 interface QueryHistoryProps {
   onQuerySelect: (query: string) => void;
   onClearHistory: () => void;
+  loading?: boolean;
 }
 
-export function QueryHistory({ onQuerySelect, onClearHistory }: QueryHistoryProps) {
+export function QueryHistory({ onQuerySelect, onClearHistory, loading = false }: QueryHistoryProps) {
   const [history, setHistory] = useState<QueryHistoryItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'favorites'>('all');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -181,10 +182,14 @@ export function QueryHistory({ onQuerySelect, onClearHistory }: QueryHistoryProp
                     <div className="flex items-center gap-2 mb-2">
                       <button
                         onClick={() => onQuerySelect(item.query)}
-                        className="text-left flex-1 min-w-0"
+                        disabled={loading}
+                        className="text-left flex-1 min-w-0 group/query disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <p className="text-sm font-medium text-gray-900 truncate group-hover:text-primary-600 transition-colors">
+                        <p className="text-sm font-medium text-gray-900 truncate group-hover:text-primary-600 group-hover/query:text-primary-600 transition-colors">
                           {item.query}
+                        </p>
+                        <p className="text-xs text-gray-500 group-hover/query:text-primary-500 transition-colors">
+                          {loading ? 'Executing query...' : 'Click to execute this query'}
                         </p>
                       </button>
                       <div className="flex items-center gap-1">

@@ -2,6 +2,57 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateMongoQuery } from '@/lib/openai';
 import { runMongoAggregation, runMongoFind } from '@/lib/mongodb';
 
+function generateFallbackChartSuggestions(data: any[]) {
+    if (!data || data.length === 0) {
+        return [{ type: 'table', title: 'No data available' }];
+    }
+
+    const suggestions = [{ type: 'table', title: 'Tabular Results' }];
+    const sampleDoc = data[0];
+    const keys = Object.keys(sampleDoc);
+
+    // Look for numeric fields for charts
+    const numericFields = keys.filter(key => {
+        const value = sampleDoc[key];
+        return typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)));
+    });
+
+    const stringFields = keys.filter(key => {
+        const value = sampleDoc[key];
+        return typeof value === 'string' && isNaN(Number(value));
+    });
+
+    // Generate chart suggestions based on available fields
+    if (numericFields.length > 0 && stringFields.length > 0) {
+        suggestions.push({
+            type: 'bar',
+            title: `${stringFields[0]} vs ${numericFields[0]}`,
+            x: stringFields[0],
+            y: numericFields[0]
+        });
+    }
+
+    if (numericFields.length >= 2) {
+        suggestions.push({
+            type: 'line',
+            title: `${numericFields[0]} over ${numericFields[1]}`,
+            x: numericFields[1],
+            y: numericFields[0]
+        });
+    }
+
+    if (stringFields.length > 0) {
+        suggestions.push({
+            type: 'pie',
+            title: `Distribution by ${stringFields[0]}`,
+            x: stringFields[0],
+            y: 'count'
+        });
+    }
+
+    return suggestions;
+}
+
 export async function POST(request: NextRequest) {
     try {
         const { query, schemaMetadata, connectionString } = await request.json();
@@ -37,8 +88,14 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        // Add fallback chart suggestions if none provided
+        const chartSuggestions = assistantResponse.chart_suggestions && assistantResponse.chart_suggestions.length > 0 
+            ? assistantResponse.chart_suggestions 
+            : generateFallbackChartSuggestions(queryResult.data);
+
         return NextResponse.json({
             ...assistantResponse,
+            chart_suggestions: chartSuggestions,
             query_result: queryResult
         });
 

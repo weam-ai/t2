@@ -95,13 +95,13 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-warning-800 mb-3">Assumptions</h3>
                     <ul className="space-y-2 text-warning-700">
-                      {results.assumptions.map((assumption: string, index: number) => (
+                  {results.assumptions.map((assumption: string, index: number) => (
                         <li key={index} className="flex items-start">
                           <div className="w-2 h-2 bg-warning-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                           <span className="leading-relaxed">{assumption}</span>
                         </li>
-                      ))}
-                    </ul>
+                  ))}
+                </ul>
                   </div>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                   <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
                   <Table className="relative h-8 w-8 text-primary-600" />
                 </div>
-                <div>
+          <div>
                   <h3 className="text-2xl font-bold text-gray-900">Data Results</h3>
                   <p className="text-gray-600 mt-1">Query results displayed in a structured table format</p>
                 </div>
@@ -162,7 +162,7 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                 <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
                 <Code className="relative h-8 w-8 text-primary-600" />
               </div>
-              <div>
+          <div>
                 <h3 className="text-2xl font-bold text-gray-900">MongoDB Aggregation Pipeline</h3>
                 <p className="text-gray-600 mt-1">Generated MongoDB pipeline for your query</p>
               </div>
@@ -181,16 +181,24 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                 <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
                 <BarChart3 className="relative h-8 w-8 text-primary-600" />
               </div>
-              <div>
+          <div>
                 <h3 className="text-2xl font-bold text-gray-900">Interactive Charts</h3>
                 <p className="text-gray-600 mt-1">Interactive visualizations powered by Recharts</p>
               </div>
             </div>
             {results.chart_suggestions && results.chart_suggestions.length > 0 && results.query_result?.success ? (
-              <ChartViewer 
-                data={results.query_result.data} 
-                chartSuggestions={results.chart_suggestions}
-              />
+              <>
+                {/* Debug info */}
+                <div className="mb-4 p-4 bg-gray-100 rounded-lg text-sm">
+                  <p><strong>Chart Suggestions:</strong> {JSON.stringify(results.chart_suggestions, null, 2)}</p>
+                  <p><strong>Data Length:</strong> {results.query_result.data?.length || 0}</p>
+                  <p><strong>Sample Data:</strong> {JSON.stringify(results.query_result.data?.slice(0, 2), null, 2)}</p>
+                </div>
+                <ChartViewer 
+                  data={results.query_result.data} 
+                  chartSuggestions={results.chart_suggestions}
+                />
+              </>
             ) : (
               <div className="card-glass p-12 text-center">
                 <div className="relative mb-6">
@@ -203,8 +211,8 @@ export function ResultsDisplay({ results }: ResultsDisplayProps) {
                     ? 'Charts will appear when your query executes successfully'
                     : 'No chart suggestions available for this data'
                   }
-                </p>
-              </div>
+                    </p>
+                  </div>
             )}
           </div>
         )}
