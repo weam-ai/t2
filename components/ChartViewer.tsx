@@ -74,6 +74,7 @@ export function ChartViewer({ data, chartSuggestions }: ChartViewerProps) {
 
     switch (currentChart.type) {
       case 'bar':
+        if (!currentChart.x || !currentChart.y) return null;
         return (
           <BarChart {...chartProps}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} />
@@ -114,6 +115,7 @@ export function ChartViewer({ data, chartSuggestions }: ChartViewerProps) {
         );
 
       case 'line':
+        if (!currentChart.x || !currentChart.y) return null;
         return (
           <LineChart {...chartProps}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} />
@@ -151,6 +153,7 @@ export function ChartViewer({ data, chartSuggestions }: ChartViewerProps) {
         );
 
       case 'area':
+        if (!currentChart.x || !currentChart.y) return null;
         return (
           <AreaChart {...chartProps}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.3} />
@@ -193,6 +196,7 @@ export function ChartViewer({ data, chartSuggestions }: ChartViewerProps) {
         );
 
       case 'pie':
+        if (!currentChart.x || !currentChart.y) return null;
         return (
           <PieChart>
             <Pie
@@ -302,7 +306,7 @@ export function ChartViewer({ data, chartSuggestions }: ChartViewerProps) {
         <div className="p-6">
           <div className={`${isFullscreen ? 'h-[calc(100vh-200px)]' : 'h-96'} w-full`}>
             <ResponsiveContainer width="100%" height="100%">
-              {renderChart()}
+              {renderChart() || <div className="flex items-center justify-center h-full text-gray-500">No chart data available</div>}
             </ResponsiveContainer>
           </div>
         </div>
