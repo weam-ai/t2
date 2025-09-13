@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Edit3, Save, Plus, Trash2, ChevronDown, ChevronRight, Upload, Download } from 'lucide-react';
+import { Edit3, Save, Plus, Trash2, ChevronDown, ChevronRight, Upload, Download, Database, Table } from 'lucide-react';
 
 interface SchemaEditorProps {
   schemaMetadata: any;
@@ -158,19 +158,25 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg">
+    <div className="card animate-slide-up">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-gray-200 p-8 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-800">Schema Editor</h2>
-            <p className="text-gray-600">Edit your database schema metadata</p>
+          <div className="flex items-center">
+            <div className="relative mr-4">
+              <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
+              <Edit3 className="relative h-8 w-8 text-primary-600" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900">Schema Editor</h2>
+              <p className="text-gray-600 mt-1">Edit your database schema metadata and field descriptions</p>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="btn-primary px-6 py-3"
               >
                 <Edit3 className="h-4 w-4 mr-2" />
                 Edit Schema
@@ -179,13 +185,13 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
               <>
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="btn-secondary px-6 py-3"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  className="btn-success px-6 py-3"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
@@ -197,9 +203,9 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
       </div>
 
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-4 bg-gray-50">
+      <div className="border-b border-gray-200 p-6 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center justify-between">
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <input
               type="file"
               accept=".json"
@@ -209,60 +215,67 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
             />
             <label
               htmlFor="schema-upload"
-              className="flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 cursor-pointer"
+              className="btn-secondary cursor-pointer"
             >
               <Upload className="h-4 w-4 mr-2" />
               Upload Schema
             </label>
             <button
               onClick={handleDownload}
-              className="flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="btn-secondary"
             >
               <Download className="h-4 w-4 mr-2" />
               Download Schema
             </button>
           </div>
-          <div className="text-sm text-gray-500">
-            Database: {editedSchema.database}
+          <div className="flex items-center text-sm text-gray-600 bg-gray-100 px-4 py-2 rounded-lg">
+            <Database className="h-4 w-4 mr-2" />
+            <span className="font-medium">Database: {editedSchema.database}</span>
           </div>
         </div>
       </div>
 
       {/* Schema Content */}
-      <div className="p-6">
+      <div className="p-8">
         {/* Basic Info */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Basic Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mb-8">
+          <div className="flex items-center mb-6">
+            <div className="relative mr-4">
+              <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
+              <Database className="relative h-6 w-6 text-primary-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">Basic Information</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Database Name</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Database Name</label>
               <input
                 type="text"
                 value={editedSchema.database || ''}
                 onChange={(e) => setEditedSchema({...editedSchema, database: e.target.value})}
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                className="input disabled:bg-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Timezone</label>
               <input
                 type="text"
                 value={editedSchema.timezone || ''}
                 onChange={(e) => setEditedSchema({...editedSchema, timezone: e.target.value})}
                 disabled={!isEditing}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                className="input disabled:bg-gray-100"
               />
             </div>
           </div>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Domain Notes</label>
+          <div className="mt-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Domain Notes</label>
             <textarea
               value={editedSchema.domain_notes || ''}
               onChange={(e) => setEditedSchema({...editedSchema, domain_notes: e.target.value})}
               disabled={!isEditing}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              rows={4}
+              className="input disabled:bg-gray-100 resize-none"
               placeholder="Business logic notes, e.g., 'Revenue = invoices.amount'"
             />
           </div>
@@ -270,12 +283,18 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
 
         {/* Collections */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Collections</h3>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center">
+              <div className="relative mr-4">
+                <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
+                <Table className="relative h-6 w-6 text-primary-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">Collections</h3>
+            </div>
             {isEditing && (
               <button
                 onClick={addCollection}
-                className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                className="btn-success px-6 py-3"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Collection
@@ -283,95 +302,103 @@ export function SchemaEditor({ schemaMetadata, onSchemaUpdate, onSchemaSave }: S
             )}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {Object.entries(editedSchema.schema_json || {}).map(([collectionName, fields]: [string, any]) => (
-              <div key={collectionName} className="border border-gray-200 rounded-lg">
-                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <div key={collectionName} className="card-hover">
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => setActiveSection(activeSection === collectionName ? null : collectionName)}
-                      className="flex items-center text-left"
+                      className="flex items-center text-left group"
                     >
                       {activeSection === collectionName ? (
-                        <ChevronDown className="h-4 w-4 mr-2" />
+                        <ChevronDown className="h-5 w-5 mr-3 text-primary-600 group-hover:text-primary-700" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 mr-2" />
+                        <ChevronRight className="h-5 w-5 mr-3 text-gray-500 group-hover:text-primary-600" />
                       )}
-                      <span className="font-medium text-gray-800">{collectionName}</span>
+                      <div>
+                        <span className="text-lg font-semibold text-gray-800">{collectionName}</span>
+                        <p className="text-sm text-gray-600">
+                          {Object.keys(fields).length} fields
+                        </p>
+                      </div>
                     </button>
                     {isEditing && (
                       <button
                         onClick={() => removeCollection(collectionName)}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-error-600 hover:text-error-700 p-2 rounded-lg hover:bg-error-50 transition-colors"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-5 w-5" />
                       </button>
                     )}
                   </div>
                 </div>
 
                 {activeSection === collectionName && (
-                  <div className="p-4 space-y-4">
+                  <div className="p-6 space-y-6 animate-slide-down">
                     {/* Collection Description */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                       <input
                         type="text"
                         value={editedSchema.collection_descriptions?.[collectionName] || ''}
                         onChange={(e) => updateCollectionDescription(collectionName, e.target.value)}
                         disabled={!isEditing}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                        className="input disabled:bg-gray-100"
                         placeholder="Collection description"
                       />
                     </div>
 
                     {/* Fields */}
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-medium text-gray-700">Fields</label>
+                      <div className="flex items-center justify-between mb-4">
+                        <label className="block text-sm font-semibold text-gray-700">Fields</label>
                         {isEditing && (
                           <button
                             onClick={() => addField(collectionName)}
-                            className="flex items-center px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                            className="btn-primary px-4 py-2 text-sm"
                           >
-                            <Plus className="h-3 w-3 mr-1" />
+                            <Plus className="h-4 w-4 mr-2" />
                             Add Field
                           </button>
                         )}
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {Object.entries(fields).map(([fieldName, fieldType]: [string, any]) => (
-                          <div key={fieldName} className="flex gap-2 items-center">
+                          <div key={fieldName} className="flex gap-3 items-center p-4 bg-gray-50 rounded-lg">
                             <div className="flex-1">
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Field Name</label>
                               <input
                                 type="text"
                                 value={fieldName}
                                 disabled
-                                className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-100 text-gray-600"
+                                className="input disabled:bg-gray-200 text-gray-600"
                               />
                             </div>
                             <div className="flex-1">
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
                               <input
                                 type="text"
                                 value={fieldType}
                                 disabled
-                                className="w-full px-3 py-2 border border-gray-300 rounded bg-gray-100 text-gray-600"
+                                className="input disabled:bg-gray-200 text-gray-600"
                               />
                             </div>
-                            <div className="flex-2">
+                            <div className="flex-1">
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
                               <input
                                 type="text"
                                 value={editedSchema.field_descriptions?.[collectionName]?.[fieldName] || ''}
                                 onChange={(e) => updateFieldDescription(collectionName, fieldName, e.target.value)}
                                 disabled={!isEditing}
-                                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                                className="input disabled:bg-gray-100"
                                 placeholder="Field description"
                               />
                             </div>
                             {isEditing && (
                               <button
                                 onClick={() => removeField(collectionName, fieldName)}
-                                className="text-red-600 hover:text-red-800 p-1"
+                                className="text-error-600 hover:text-error-700 p-2 rounded-lg hover:bg-error-50 transition-colors mt-6"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>

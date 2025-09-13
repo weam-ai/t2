@@ -1,219 +1,121 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Database, BarChart3, Table, Loader2, Settings } from 'lucide-react';
-import { QueryInterface } from '@/components/QueryInterface';
-import { ResultsDisplay } from '@/components/ResultsDisplay';
-import { SchemaInfo } from '@/components/SchemaInfo';
-import { DatabaseConnection } from '@/components/DatabaseConnection';
-import { SchemaEditor } from '@/components/SchemaEditor';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Database, ArrowRight, Sparkles, BarChart3, Code } from 'lucide-react';
 
 export default function Home() {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [schemaMetadata, setSchemaMetadata] = useState(null);
-  const [connectionString, setConnectionString] = useState('');
-  const [databaseName, setDatabaseName] = useState('');
-  const [isConnected, setIsConnected] = useState(false);
-  const [activeTab, setActiveTab] = useState('connection');
+  const router = useRouter();
+  const [showLanding, setShowLanding] = useState(false);
 
-  const handleConnectionSuccess = (connString: string, dbName: string) => {
-    setConnectionString(connString);
-    setDatabaseName(dbName);
-    setIsConnected(true);
-    setActiveTab('query');
-  };
+  useEffect(() => {
+    // Show landing page for 3 seconds, then redirect
+    const timer = setTimeout(() => {
+      setShowLanding(true);
+    }, 1000);
 
-  const handleSchemaLoad = (schema: any) => {
-    setSchemaMetadata(schema);
-  };
+    const redirectTimer = setTimeout(() => {
+      router.replace('/askdb');
+    }, 4000);
 
-  const handleSchemaUpdate = (schema: any) => {
-    setSchemaMetadata(schema);
-  };
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(redirectTimer);
+    };
+  }, [router]);
 
-  const handleSchemaSave = (schema: any) => {
-    setSchemaMetadata(schema);
-    // Here you could save to localStorage or send to server
-    localStorage.setItem('schemaMetadata', JSON.stringify(schema));
-  };
-
-  const handleQuery = async (userQuery: string) => {
-    if (!isConnected || !schemaMetadata) {
-      alert('Please connect to a database first');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch('/api/query', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: userQuery,
-          schemaMetadata: schemaMetadata,
-          connectionString: connectionString
-        }),
-      });
-
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error('Query error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadSchema = async () => {
-    try {
-      const response = await fetch('/api/schema');
-      const data = await response.json();
-      setSchemaMetadata(data);
-    } catch (error) {
-      console.error('Schema load error:', error);
-    }
-  };
+  if (!showLanding) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-100/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-primary-500 rounded-3xl blur-2xl opacity-30"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-white/20">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 mx-auto"></div>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">AskDB</h2>
+          <p className="text-gray-600">Loading application...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-100/50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-success-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-warning-200/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Database className="h-12 w-12 text-blue-600 mr-3" />
-            <h1 className="text-4xl font-bold text-gray-900">
-              Talk-to-Mongo Assistant
-            </h1>
-          </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Convert your natural language questions into MongoDB aggregation pipelines
-          </p>
-        </div>
-
-        {/* Navigation Tabs */}
-        <div className="mb-8">
-          <div className="bg-white rounded-lg shadow-md">
-            <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6">
-                <button
-                  onClick={() => setActiveTab('connection')}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'connection'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Database className="h-4 w-4 mr-2" />
-                  Database Connection
-                </button>
-                <button
-                  onClick={() => setActiveTab('schema')}
-                  disabled={!isConnected}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'schema'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Schema Editor
-                </button>
-                <button
-                  onClick={() => setActiveTab('query')}
-                  disabled={!isConnected}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'query'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  } ${!isConnected ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Query Interface
-                </button>
-              </nav>
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="floating-card p-8 mb-8 max-w-4xl mx-auto">
+            <div className="flex items-center justify-center mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-primary-600 rounded-3xl blur-2xl opacity-30"></div>
+                <div className="relative bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-white/20">
+                  <Database className="h-16 w-16 text-primary-600" />
+                </div>
+              </div>
             </div>
-
-            <div className="p-6">
-              {activeTab === 'connection' && (
-                <DatabaseConnection
-                  onConnectionSuccess={handleConnectionSuccess}
-                  onSchemaLoad={handleSchemaLoad}
-                />
-              )}
-
-              {activeTab === 'schema' && isConnected && (
-                <SchemaEditor
-                  schemaMetadata={schemaMetadata}
-                  onSchemaUpdate={handleSchemaUpdate}
-                  onSchemaSave={handleSchemaSave}
-                />
-              )}
-
-              {activeTab === 'query' && isConnected && (
-                <div className="space-y-6">
-                  {/* Schema Info */}
-                  <SchemaInfo 
-                    schemaMetadata={schemaMetadata} 
-                    onLoadSchema={loadSchema}
-                  />
-
-                  {/* Query Interface */}
-                  <QueryInterface 
-                    onQuery={handleQuery}
-                    loading={loading}
-                  />
-
-                  {/* Results */}
-                  {results && (
-                    <ResultsDisplay results={results} />
-                  )}
-                </div>
-              )}
-
-              {!isConnected && activeTab !== 'connection' && (
-                <div className="text-center py-12">
-                  <Database className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Connect to Database First</h3>
-                  <p className="text-gray-600 mb-4">Please establish a database connection to access this feature.</p>
-                  <button
-                    onClick={() => setActiveTab('connection')}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Go to Connection
-                  </button>
-                </div>
-              )}
+            <div>
+              <h1 className="text-6xl font-bold gradient-text mb-4">
+                AskDB
+              </h1>
+              <div className="h-2 w-32 bg-gradient-to-r from-primary-500 to-primary-600 mx-auto rounded-full mb-6"></div>
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
+                Transform your natural language questions into powerful MongoDB aggregation pipelines with AI-powered intelligence
+              </p>
+              <button
+                onClick={() => router.push('/askdb')}
+                className="btn-primary px-8 py-4 text-lg inline-flex items-center"
+              >
+                Launch AskDB
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </button>
             </div>
           </div>
         </div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-3 gap-6 mt-16">
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <Search className="h-8 w-8 text-blue-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Natural Language</h3>
-            <p className="text-gray-600">
-              Ask questions in plain English and get MongoDB queries automatically generated.
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="card p-6 text-center animate-slide-up">
+            <div className="relative mb-4">
+              <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
+              <Sparkles className="relative h-12 w-12 text-primary-600 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">AI-Powered</h3>
+            <p className="text-gray-600">Advanced AI converts your natural language into precise MongoDB queries</p>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <BarChart3 className="h-8 w-8 text-green-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Smart Analytics</h3>
-            <p className="text-gray-600">
-              Get intelligent chart suggestions and data visualizations for your results.
-            </p>
+
+          <div className="card p-6 text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="relative mb-4">
+              <div className="absolute inset-0 bg-success-100 rounded-xl blur-lg opacity-50"></div>
+              <BarChart3 className="relative h-12 w-12 text-success-600 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">Visual Analytics</h3>
+            <p className="text-gray-600">Interactive charts and visualizations for your data insights</p>
           </div>
-          <div className="bg-white rounded-lg p-6 shadow-md">
-            <Table className="h-8 w-8 text-purple-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Safe Queries</h3>
-            <p className="text-gray-600">
-              All queries are read-only and safe, with built-in privacy protection.
-            </p>
+
+          <div className="card p-6 text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="relative mb-4">
+              <div className="absolute inset-0 bg-warning-100 rounded-xl blur-lg opacity-50"></div>
+              <Code className="relative h-12 w-12 text-warning-600 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-3">MongoDB Native</h3>
+            <p className="text-gray-600">Direct integration with MongoDB using aggregation pipelines</p>
           </div>
+        </div>
+
+        {/* Auto-redirect notice */}
+        <div className="text-center">
+          <p className="text-gray-500 text-sm">
+            Automatically redirecting to the application in a few seconds...
+          </p>
         </div>
       </div>
     </div>

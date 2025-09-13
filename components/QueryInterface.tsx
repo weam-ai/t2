@@ -27,26 +27,32 @@ export function QueryInterface({ onQuery, loading }: QueryInterfaceProps) {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-semibold mb-4 flex items-center">
-        <Search className="h-6 w-6 mr-2 text-blue-600" />
-        Ask Your Question
-      </h2>
+    <div className="card p-8 animate-slide-up">
+      <div className="flex items-center mb-6">
+        <div className="relative mr-4">
+          <div className="absolute inset-0 bg-primary-100 rounded-xl blur-lg opacity-50"></div>
+          <Search className="relative h-8 w-8 text-primary-600" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Ask Your Question</h2>
+          <p className="text-gray-600 mt-1">Transform your thoughts into powerful MongoDB queries</p>
+        </div>
+      </div>
       
-      <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex gap-2">
+      <form onSubmit={handleSubmit} className="mb-8">
+        <div className="relative">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="e.g., Show me the top 10 drivers by revenue"
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input text-lg py-4 pr-16"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={loading || !query.trim()}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 btn-primary px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -55,19 +61,28 @@ export function QueryInterface({ onQuery, loading }: QueryInterfaceProps) {
             )}
           </button>
         </div>
+        {loading && (
+          <div className="mt-4 flex items-center text-primary-600 animate-pulse-soft">
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            <span className="text-sm">Generating MongoDB query...</span>
+          </div>
+        )}
       </form>
 
       <div>
-        <h3 className="text-lg font-medium mb-3 text-gray-700">Example Queries:</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <h3 className="text-lg font-semibold mb-4 text-gray-800">Example Queries</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {exampleQueries.map((example, index) => (
             <button
               key={index}
               onClick={() => setQuery(example)}
-              className="text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-700 transition-colors"
+              className="text-left p-4 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 border border-transparent rounded-xl text-sm text-gray-700 hover:text-primary-700 transition-all duration-200 group"
               disabled={loading}
             >
-              {example}
+              <div className="flex items-start">
+                <div className="w-2 h-2 bg-primary-400 rounded-full mt-2 mr-3 group-hover:bg-primary-500 transition-colors"></div>
+                <span className="leading-relaxed">{example}</span>
+              </div>
             </button>
           ))}
         </div>
